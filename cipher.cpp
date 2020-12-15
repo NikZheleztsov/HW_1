@@ -18,7 +18,7 @@ struct block
 };
 
 //XOR
-void operator^(block& b, int k)
+void XOR(block& b)
 {
     uint8_t gamma [20];
 
@@ -30,47 +30,42 @@ void operator^(block& b, int k)
 }
 
 void operator>>(block& b, int leng) 
-{ 
+{
     uint8_t bit = 0,
-            bit2 = 0;;
-    for (int i = 0; i < leng; ++i)
+            bit2 = 0;
+
+    bit = b.arr[0] << (8 - leng);
+    b.arr[0] = b.arr[0] >> leng;
+
+    for (int i = 1; i < 20; i++)
     {
-        bit = (b.arr[0] & 1) << 7;
-        b.arr[0] = b.arr[0] >> 1;
-
-        for (int k = 1; k < 20; ++k)
-        {
-            bit2 = (b.arr[k] & 1) << 7;
-            b.arr[k] = b.arr[k] >> 1;
-            b.arr[k] = b.arr[k] | bit;
-            bit = bit2;
-        }
-
-        b.arr[0] = b.arr[0] | bit;
+        bit2 = b.arr[i] << (8 - leng);
+        b.arr[i] = b.arr[i] >> leng;
+        b.arr[i] = b.arr[i] | bit;
+        bit = bit2;
     }
+
+    b.arr[0] = b.arr[0] | bit;
 }
 
 void operator<<(block& b, int leng) 
 { 
     uint8_t bit = 0,
             bit2 = 0;;
-    for (int i = 0; i < leng; ++i)
+
+    bit = b.arr[19] >> (8 - leng);
+    b.arr[19] = b.arr[19] << leng;
+
+    for (int k = 18; k >= 0; --k)
     {
-        bit = (b.arr[19] & 128) >> 7;
-        b.arr[19] = b.arr[19] << 1;
-
-        for (int k = 18; k >= 0; --k)
-        {
-            bit2 = (b.arr[k] & 128) >> 7;
-            b.arr[k] = b.arr[k] << 1;
-            b.arr[k] = b.arr[k] | bit;
-            bit = bit2;
-        }
-
-        b.arr[19] = b.arr[19] | bit;
+        bit2 = b.arr[k] >> (8 - leng);
+        b.arr[k] = b.arr[k] << leng;
+        b.arr[k] = b.arr[k] | bit;
+        bit = bit2;
     }
-}
 
+    b.arr[19] = b.arr[19] | bit;
+}
 
 int main (int argc, char* argv[])
 {
@@ -103,7 +98,7 @@ int main (int argc, char* argv[])
                     } else {
                         dir = key.substr (0, prev); //r or l
                         shift = std::stoi(key.substr(prev + 1, prev2 - prev - 1));
-                        if ((dir != "r" && dir != "l") || shift < 1 || shift > 7)
+                        if ((dir != "r" && dir != "l") || shift < 1 || shift > 9)
                         {
                             std::cout << "Wrong key format\n";
                             return 1;
@@ -175,7 +170,7 @@ int main (int argc, char* argv[])
 
                     //XOR
                     for (int i = 0; i < vec.size(); ++i)
-                        vec[i]^0;
+                        XOR(vec[i]);
 
                     //Shift
                     if (dir == "r")
@@ -220,7 +215,7 @@ int main (int argc, char* argv[])
                             vec[i] >> shift; 
 
                     for (int i = 0; i < vec.size(); ++i)
-                        vec[i]^0;
+                        XOR(vec[i]);
 
                     file.close();
 
@@ -234,10 +229,14 @@ int main (int argc, char* argv[])
                         }
 
                     //Unplugging
-                    std::string length;
-                    length[1] = text[l - 1];
+                    std::string length; //fixed
                     if (text[l - 2] > 47 && text[l-2] < 58)
+                    {
                         length[0] = text[l-2];
+                        length[1] = text[l - 1];
+
+                    } else
+                        length[0] = text[l - 1];                        
 
                     int plug_length = std::stoi(length);
 
