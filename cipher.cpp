@@ -98,7 +98,7 @@ int main (int argc, char* argv[])
                     } else {
                         dir = key.substr (0, prev); //r or l
                         shift = std::stoi(key.substr(prev + 1, prev2 - prev - 1));
-                        if ((dir != "r" && dir != "l") || shift < 1 || shift > 9)
+                        if ((dir != "r" && dir != "l") || shift < 1 || shift > 8)
                         {
                             std::cout << "Wrong key format\n";
                             return 1;
